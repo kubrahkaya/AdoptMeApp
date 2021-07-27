@@ -25,6 +25,7 @@ buildscript {
         def lifecycle_version = '2.1.0'
         def livedata_version = '2.2.0-rc02'
         def material_version = '1.1.0-alpha09'
+        def mockito_kotlin = '2.2.0'
         def retrofit_gson_version = '2.6.2'
         def retrofit_version = '2.6.2'
         def room_version = '2.2.1'
@@ -85,6 +86,7 @@ buildscript {
 
                 // Mocks
                 "org.mockito:mockito-core:2.23.0",
+                "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin",
 
                 //  Architecture Components testing libraries
                 "androidx.arch.core:core-testing:$lifecycle_version",
@@ -104,7 +106,7 @@ buildscript {
 
                 //  Architecture Components testing libraries
                 "androidx.arch.core:core-testing:$lifecycle_version",
-                "androidx.work:work-testing:$work_version",
+                "androidx.work:work-testing:$work_version"
 
         ]
     }
