@@ -4,6 +4,7 @@
 Users can search by breed name and see more details about any specific breed.
 
 ## TechStack 
+[Guidance to app architecture](https://developer.android.com/jetpack/guide) followed
 * Kotlin Coroutines 
 * MVVM design pattern & Clean Architecture and Solid Principles applied
 * Retrofit used to retrieve data from the network 
