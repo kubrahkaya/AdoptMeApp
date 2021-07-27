@@ -2,8 +2,7 @@ package com.innovaocean.adoptmeapp.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.innovaocean.adoptmeapp.MainCoroutineRule
-import com.innovaocean.adoptmeapp.data.BreedResponse
-import com.innovaocean.adoptmeapp.data.ImageResponse
+import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
 import com.innovaocean.adoptmeapp.util.Resource
 import com.innovaocean.adoptmeapp.util.Status
@@ -32,16 +31,7 @@ class HomeViewModelTest {
     @RelaxedMockK
     private lateinit var useCase: GetBreedsUseCase
 
-    private val list = listOf(
-        BreedResponse(
-            id = "1",
-            name = "Siamese",
-            image = ImageResponse(""),
-            temperament = "Good cat",
-            wikipediaUrl = "www",
-            energyLevel = 6
-        )
-    )
+    private val testBreedsList = TestDataProvider.getBreeds()
 
     @Before
     fun setUp() {
@@ -58,7 +48,7 @@ class HomeViewModelTest {
             //arrange
             coEvery {
                 useCase.execute(existedBreedName)
-            } returns Resource.success(list)
+            } returns Resource.success(testBreedsList)
 
             //act
             viewModel.searchBreeds(existedBreedName)
@@ -85,5 +75,4 @@ class HomeViewModelTest {
             assertEquals(viewModel.searchBreeds.value?.status, Status.ERROR)
         }
     }
-
 }
