@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -31,18 +32,23 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         setHasOptionsMenu(true)
         setupRecyclerView(view)
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+        val errorText = view.findViewById<TextView>(R.id.errorText)
 
         viewModel.searchBreeds.observe(viewLifecycleOwner, { response ->
             when (response.status) {
                 Status.SUCCESS -> {
                     progressBar.gone()
+                    errorText.gone()
                     breedAdapter.differ.submitList(response.data?.toList())
                 }
                 Status.ERROR -> {
-                    //show error view
+                    errorText.visible()
+                    errorText.text = response.message.toString()
+                    breedAdapter.differ.submitList(emptyList())
                     progressBar.gone()
                 }
                 Status.LOADING -> {
+                    errorText.gone()
                     progressBar.visible()
                 }
             }

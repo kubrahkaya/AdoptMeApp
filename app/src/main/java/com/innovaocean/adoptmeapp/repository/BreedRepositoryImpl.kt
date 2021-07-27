@@ -15,9 +15,17 @@ class BreedRepositoryImpl @Inject constructor(
             val response = petApi.getBreeds()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    return@let Resource.success(it.filter { response ->
-                        response.name.contains(searchQuery, ignoreCase = true)
-                    })
+                    val filteredList = it.filter { response ->
+                        response.name.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        )
+                    }
+                    if (filteredList.isEmpty()) {
+                        return@let Resource.error("No kitty cat found", null)
+                    } else {
+                        return@let Resource.success(filteredList)
+                    }
                 } ?: Resource.error("Unknown error", null)
             } else {
                 Resource.error("Unknown error", null)
