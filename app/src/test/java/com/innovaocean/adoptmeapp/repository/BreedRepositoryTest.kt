@@ -54,4 +54,18 @@ class BreedRepositoryTest {
             assertEquals(response.status, Status.ERROR)
         }
     }
+
+    @Test
+    fun `when repo doesn't contain searched query return error`() {
+        runBlockingTest {
+            //arrange
+            coEvery { api.getBreeds().body() } returns TestDataProvider.getBreeds()
+
+            //act
+            val response = repository.searchForBreeds("XX")
+
+            //assert
+            assertEquals(response.status, Status.ERROR)
+        }
+    }
 }
