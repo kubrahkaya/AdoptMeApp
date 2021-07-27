@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface PetApi {
 
-    @GET("/breeds/search")
+    @GET("breeds/search")
     suspend fun searchForBreedsByName(
         @Query("x-api-key") apiKey: String = Constants.API_KEY,
         @Query("q") searchQuery: String
