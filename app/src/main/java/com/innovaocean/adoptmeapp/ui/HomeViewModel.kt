@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.innovaocean.adoptmeapp.data.BreedResponse
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
 import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.util.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,10 +23,14 @@ class HomeViewModel @Inject constructor(private val useCase: GetBreedsUseCase) :
             return
         }
 
+        _searchBreeds.postValue(Resource.loading(null))
         viewModelScope.launch {
-            _searchBreeds.postValue(Resource.loading(null))
             val response = useCase.execute(searchQuery)
-            _searchBreeds.postValue(response)
+            if(response.status == Status.SUCCESS){
+                _searchBreeds.postValue(Resource.success(response.data))
+            }else {
+                _searchBreeds.postValue(Resource.error(msg= "No breed found", null))
+            }
         }
     }
 

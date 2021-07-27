@@ -4,21 +4,21 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.innovaocean.adoptmeapp.MainCoroutineRule
 import com.innovaocean.adoptmeapp.data.BreedResponse
 import com.innovaocean.adoptmeapp.data.ImageResponse
-import com.innovaocean.adoptmeapp.repository.BreedRepository
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
-import com.nhaarman.mockitokotlin2.whenever
+import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.util.Status
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
 class HomeViewModelTest {
 
     @get:Rule
@@ -27,11 +27,9 @@ class HomeViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    @Mock
-    private lateinit var repository: BreedRepository
-
     private lateinit var viewModel: HomeViewModel
 
+    @RelaxedMockK
     private lateinit var useCase: GetBreedsUseCase
 
     private val list = listOf(
@@ -47,7 +45,7 @@ class HomeViewModelTest {
 
     @Before
     fun setUp() {
-        useCase = GetBreedsUseCase(repository)
+        MockKAnnotations.init(this)
 
         // instantiate the system in test
         viewModel = HomeViewModel(useCase)
@@ -55,14 +53,36 @@ class HomeViewModelTest {
 
     @Test
     fun `when searched breed is in repo`() {
+        val existedBreedName = "Siamese"
         mainCoroutineRule.runBlockingTest {
-            whenever(repository.searchForBreeds("Siamese")).thenAnswer {
-                list
-            }
+            //arrange
+            coEvery {
+                useCase.execute(existedBreedName)
+            } returns Resource.success(list)
 
-            viewModel.searchBreeds("Siamese")
+            //act
+            viewModel.searchBreeds(existedBreedName)
 
-            Assert.assertNotNull(viewModel.searchBreeds.value)
+            //assert
+            assertNotNull(viewModel.searchBreeds.value)
+            assertEquals(viewModel.searchBreeds.value?.status, Status.SUCCESS)
+        }
+    }
+
+    @Test
+    fun `when searched breed is not repo`() {
+        val unknownBreed = "XXX"
+        mainCoroutineRule.runBlockingTest {
+            //arrange
+            coEvery {
+                useCase.execute(unknownBreed)
+            } returns Resource.error("", null)
+
+            //act
+            viewModel.searchBreeds(unknownBreed)
+
+            //assert
+            assertEquals(viewModel.searchBreeds.value?.status, Status.ERROR)
         }
     }
 
