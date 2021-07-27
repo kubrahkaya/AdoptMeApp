@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.data.BreedResponse
+import com.innovaocean.adoptmeapp.util.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +29,17 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         setupRecyclerView(view)
 
         viewModel.searchBreeds.observe(viewLifecycleOwner, { response ->
-            breedAdapter.differ.submitList(response.data?.toList())
+            when(response.status){
+                Status.SUCCESS-> {
+                    breedAdapter.differ.submitList(response.data?.toList())
+                }
+                Status.ERROR -> {
+                    //show error view
+                }
+                Status.LOADING -> {
+                    //show progress bar
+                }
+            }
         })
     }
 
@@ -43,8 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
     private fun onBreedClicked(response: BreedResponse) {
-        //todo add bundle response here.
-        findNavController().navigate(R.id.action_homeFragment_to_detailFragment)
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDetailFragment(response))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -72,7 +82,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         text?.let {
             //todo add filtered texts here
             viewModel.searchBreeds(text)
-
         }
         return true
     }

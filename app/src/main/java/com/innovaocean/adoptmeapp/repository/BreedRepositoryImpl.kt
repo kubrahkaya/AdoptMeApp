@@ -12,10 +12,12 @@ class BreedRepositoryImpl @Inject constructor(
 
     override suspend fun searchForBreeds(searchQuery: String): Resource<List<BreedResponse>> {
         return try {
-            val response = petApi.searchForBreedsByName(searchQuery = searchQuery)
+            val response = petApi.getBreeds()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    return@let Resource.success(it)
+                    return@let Resource.success(it.filter { response ->
+                        response.name.contains(searchQuery)
+                    })
                 } ?: Resource.error("Unknown error", null)
             } else {
                 Resource.error("Unknown error", null)

@@ -15,9 +15,8 @@
         android:id="@+id/detailFragment"
         android:name="com.innovaocean.adoptmeapp.ui.DetailFragment"
         android:label="DetailFragment" >
-<!--        <argument-->
-<!--            android:name="breed"-->
-<!--            app:argType="com.innovaocean.adoptmeapp.data.BreedResponse"-->
-<!--            app:nullable="true"/>-->
+        <argument
+            android:name="breed"
+            app:argType="com.innovaocean.adoptmeapp.data.BreedResponse"/>
     </fragment>
 </navigation>

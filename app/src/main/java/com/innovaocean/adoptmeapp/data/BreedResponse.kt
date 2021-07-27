@@ -10,8 +10,8 @@ data class BreedResponse(
     val id: String,
     @SerializedName("name")
     val name: String,
-//    @SerializedName("image")
-//    val image: ImageResponse,
+    @SerializedName("image")
+    val image: ImageResponse?,
     @SerializedName("temperament")
     val temperament: String,
     @SerializedName("wikipedia_url")

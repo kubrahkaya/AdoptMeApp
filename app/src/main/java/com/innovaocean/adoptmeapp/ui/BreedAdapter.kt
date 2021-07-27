@@ -45,7 +45,9 @@ class BreedAdapter(private val onBreedClicked: (BreedResponse) -> Unit) :
         val imageView = holder.itemView.findViewById<ImageView>(R.id.breedImage)
         val textView = holder.itemView.findViewById<TextView>(R.id.breedName)
         holder.itemView.apply {
-           // Glide.with(this).load(breed.image.url).into(imageView)
+            breed.image?.let {
+                Glide.with(this).load(it.url).into(imageView)
+            }
             textView.text = breed.name
             setOnClickListener {
                 onBreedClicked(breed)

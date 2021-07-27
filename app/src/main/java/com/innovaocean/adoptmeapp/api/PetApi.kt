@@ -14,4 +14,9 @@ interface PetApi {
         @Query("q") searchQuery: String
     ): Response<List<BreedResponse>>
 
+    @GET("breeds")
+    suspend fun getBreeds(
+        @Query("x-api-key") apiKey: String = Constants.API_KEY,
+    ): Response<List<BreedResponse>>
+
 }
