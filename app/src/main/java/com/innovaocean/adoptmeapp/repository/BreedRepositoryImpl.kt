@@ -16,7 +16,7 @@ class BreedRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let {
                     return@let Resource.success(it.filter { response ->
-                        response.name.contains(searchQuery)
+                        response.name.contains(searchQuery, ignoreCase = true)
                     })
                 } ?: Resource.error("Unknown error", null)
             } else {

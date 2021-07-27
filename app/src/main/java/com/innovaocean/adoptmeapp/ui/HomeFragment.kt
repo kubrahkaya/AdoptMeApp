@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,29 +16,34 @@ import androidx.recyclerview.widget.RecyclerView
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.data.BreedResponse
 import com.innovaocean.adoptmeapp.util.Status
+import com.innovaocean.adoptmeapp.util.gone
+import com.innovaocean.adoptmeapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener {
 
     private val viewModel: HomeViewModel by viewModels()
-    lateinit var breedAdapter: BreedAdapter
+    private lateinit var breedAdapter: BreedAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setupRecyclerView(view)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 
         viewModel.searchBreeds.observe(viewLifecycleOwner, { response ->
-            when(response.status){
-                Status.SUCCESS-> {
+            when (response.status) {
+                Status.SUCCESS -> {
+                    progressBar.gone()
                     breedAdapter.differ.submitList(response.data?.toList())
                 }
                 Status.ERROR -> {
                     //show error view
+                    progressBar.gone()
                 }
                 Status.LOADING -> {
-                    //show progress bar
+                    progressBar.visible()
                 }
             }
         })
@@ -54,7 +60,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
     private fun onBreedClicked(response: BreedResponse) {
-        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDetailFragment(response))
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeFragmentToDetailFragment(
+                response
+            )
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,11 +77,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
             setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
             isIconifiedByDefault = false
             queryHint = "Search"
+            val query =
+                if (viewModel.searchedQuery.isEmpty()) "Balinese" else viewModel.searchedQuery
+            onQueryTextChange(query)
             setQuery(query, true)
             minimumWidth = 2700000
             isSubmitButtonEnabled = true
         }.setOnQueryTextListener(this)
-
     }
 
     override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -80,8 +92,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
 
     override fun onQueryTextChange(text: String?): Boolean {
         text?.let {
-            //todo add filtered texts here
+            viewModel.searchedQuery = text
             viewModel.searchBreeds(text)
+        }
+        if (text.isNullOrEmpty()) {
+            breedAdapter.differ.submitList(emptyList())
         }
         return true
     }

@@ -18,6 +18,8 @@ class HomeViewModel @Inject constructor(private val useCase: GetBreedsUseCase) :
     private var _searchBreeds: MutableLiveData<Resource<List<BreedResponse>>> = MutableLiveData()
     val searchBreeds: LiveData<Resource<List<BreedResponse>>> = _searchBreeds
 
+    var searchedQuery: String = ""
+
     fun searchBreeds(searchQuery: String) {
         if (searchQuery.isEmpty()) {
             return
@@ -26,10 +28,10 @@ class HomeViewModel @Inject constructor(private val useCase: GetBreedsUseCase) :
         _searchBreeds.postValue(Resource.loading(null))
         viewModelScope.launch {
             val response = useCase.execute(searchQuery)
-            if(response.status == Status.SUCCESS){
+            if (response.status == Status.SUCCESS) {
                 _searchBreeds.postValue(Resource.success(response.data))
-            }else {
-                _searchBreeds.postValue(Resource.error(msg= "No breed found", null))
+            } else {
+                _searchBreeds.postValue(Resource.error(msg = "No breed found", null))
             }
         }
     }
