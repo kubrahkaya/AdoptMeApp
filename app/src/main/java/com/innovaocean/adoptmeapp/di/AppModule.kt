@@ -1,6 +1,7 @@
 package com.innovaocean.adoptmeapp.di
 
 import com.innovaocean.adoptmeapp.api.PetApi
+import com.innovaocean.adoptmeapp.repository.BreedMapper
 import com.innovaocean.adoptmeapp.repository.BreedRepository
 import com.innovaocean.adoptmeapp.repository.BreedRepositoryImpl
 import com.innovaocean.adoptmeapp.util.Constants
@@ -28,5 +29,5 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(api: PetApi) = BreedRepositoryImpl(api) as BreedRepository
+    fun provideRepository(api: PetApi) = BreedRepositoryImpl(api, BreedMapper()) as BreedRepository
 }

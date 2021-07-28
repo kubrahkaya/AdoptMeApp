@@ -10,17 +10,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.innovaocean.adoptmeapp.R
-import com.innovaocean.adoptmeapp.data.BreedResponse
+import com.innovaocean.adoptmeapp.domain.Breed
 
-class BreedAdapter(private val onBreedClicked: (BreedResponse) -> Unit) :
+class BreedAdapter(private val onBreedClicked: (Breed) -> Unit) :
     RecyclerView.Adapter<BreedAdapter.ViewHolder>() {
 
-    private val differCallback = object : DiffUtil.ItemCallback<BreedResponse>() {
-        override fun areItemsTheSame(oldItem: BreedResponse, newItem: BreedResponse): Boolean {
+    private val differCallback = object : DiffUtil.ItemCallback<Breed>() {
+        override fun areItemsTheSame(oldItem: Breed, newItem: Breed): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: BreedResponse, newItem: BreedResponse): Boolean {
+        override fun areContentsTheSame(oldItem: Breed, newItem: Breed): Boolean {
             return oldItem == newItem
         }
     }

@@ -1,16 +1,16 @@
 package com.innovaocean.adoptmeapp.repository
 
 import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.data.BreedResponse
 import com.innovaocean.adoptmeapp.util.Resource
 import java.lang.Exception
 import javax.inject.Inject
 
 class BreedRepositoryImpl @Inject constructor(
-    private val petApi: PetApi
+    private val petApi: PetApi,
+    private val breedMapper: BreedMapper
 ) : BreedRepository {
 
-    override suspend fun searchForBreeds(searchQuery: String): Resource<List<BreedResponse>> {
+    override suspend fun searchForBreeds(searchQuery: String): Resource {
         return try {
             val response = petApi.getBreeds()
             if (response.isSuccessful) {
@@ -21,17 +21,17 @@ class BreedRepositoryImpl @Inject constructor(
                             ignoreCase = true
                         )
                     }
-                    if (filteredList.isEmpty()) {
-                        return@let Resource.error("No kitty cat found", null)
+                    return if (filteredList.isEmpty()) {
+                        Resource.EmptyList
                     } else {
-                        return@let Resource.success(filteredList)
+                        Resource.Success(breedMapper.mapToDomain(filteredList))
                     }
-                } ?: Resource.error("Unknown error", null)
+                } ?: Resource.ResponseError
             } else {
-                Resource.error("Unknown error", null)
+                Resource.ResponseUnsuccessful
             }
         } catch (e: Exception) {
-            Resource.error("Please check network connection", null)
+            Resource.Error
         }
     }
 

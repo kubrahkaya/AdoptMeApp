@@ -15,8 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovaocean.adoptmeapp.R
-import com.innovaocean.adoptmeapp.data.BreedResponse
-import com.innovaocean.adoptmeapp.util.Status
+import com.innovaocean.adoptmeapp.domain.Breed
 import com.innovaocean.adoptmeapp.util.gone
 import com.innovaocean.adoptmeapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,19 +34,19 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         val errorText = view.findViewById<TextView>(R.id.errorText)
 
         viewModel.searchBreeds.observe(viewLifecycleOwner, { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
+            when (response) {
+                is BreedEvent.Success -> {
                     progressBar.gone()
                     errorText.gone()
-                    breedAdapter.differ.submitList(response.data?.toList())
+                    breedAdapter.differ.submitList(response.list)
                 }
-                Status.ERROR -> {
+                is BreedEvent.Error -> {
                     errorText.visible()
-                    errorText.text = response.message.toString()
+                    errorText.text = response.error
                     breedAdapter.differ.submitList(emptyList())
                     progressBar.gone()
                 }
-                Status.LOADING -> {
+                is BreedEvent.Loading -> {
                     errorText.gone()
                     progressBar.visible()
                 }
@@ -65,7 +64,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         }
     }
 
-    private fun onBreedClicked(response: BreedResponse) {
+    private fun onBreedClicked(response: Breed) {
         findNavController().navigate(
             HomeFragmentDirections.actionHomeFragmentToDetailFragment(
                 response

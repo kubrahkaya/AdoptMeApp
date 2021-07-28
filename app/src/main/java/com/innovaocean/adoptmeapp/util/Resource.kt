@@ -1,26 +1,11 @@
 package com.innovaocean.adoptmeapp.util
 
-data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
+import com.innovaocean.adoptmeapp.domain.Breed
 
-    companion object {
-
-        fun <T> success(data: T?): Resource<T> {
-            return Resource(Status.SUCCESS, data, null)
-        }
-
-        fun <T> error(msg: String, data: T?): Resource<T> {
-            return Resource(Status.ERROR, data, msg)
-        }
-
-        fun <T> loading(data: T?): Resource<T> {
-            return Resource(Status.LOADING, data, null)
-        }
-    }
-
-}
-
-enum class Status {
-    SUCCESS,
-    ERROR,
-    LOADING
+sealed class Resource {
+    data class Success(val breeds: List<Breed>) : Resource()
+    object EmptyList : Resource()
+    object ResponseError : Resource()
+    object ResponseUnsuccessful : Resource()
+    object Error : Resource()
 }

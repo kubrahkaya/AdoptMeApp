@@ -3,9 +3,10 @@ package com.innovaocean.adoptmeapp.ui
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.innovaocean.adoptmeapp.MainCoroutineRule
 import com.innovaocean.adoptmeapp.TestDataProvider
+import com.innovaocean.adoptmeapp.data.ImageResponse
+import com.innovaocean.adoptmeapp.domain.Breed
+import com.innovaocean.adoptmeapp.usecase.GetBreedsResource
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
-import com.innovaocean.adoptmeapp.util.Resource
-import com.innovaocean.adoptmeapp.util.Status
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
@@ -44,18 +45,29 @@ class HomeViewModelTest {
     @Test
     fun `when searched breed is in repo`() {
         val existedBreedName = "Siamese"
+        val breeds = mutableListOf<Breed>()
+        breeds.add(
+            Breed(
+                id = "1",
+                name = "Siamese",
+                image = ImageResponse(""),
+                temperament = "Good cat",
+                wikipediaUrl = "www",
+                energyLevel = 5
+            )
+        )
         mainCoroutineRule.runBlockingTest {
             //arrange
             coEvery {
                 useCase.execute(existedBreedName)
-            } returns Resource.success(testBreedsList)
+            } returns GetBreedsResource.Success(testBreedsList)
 
             //act
             viewModel.searchBreeds(existedBreedName)
 
             //assert
             assertNotNull(viewModel.searchBreeds.value)
-            assertEquals(viewModel.searchBreeds.value?.status, Status.SUCCESS)
+            assertEquals(viewModel.searchBreeds.value, BreedEvent.Success(breeds))
         }
     }
 
@@ -66,13 +78,13 @@ class HomeViewModelTest {
             //arrange
             coEvery {
                 useCase.execute(unknownBreed)
-            } returns Resource.error("", null)
+            } returns GetBreedsResource.Error("Error")
 
             //act
             viewModel.searchBreeds(unknownBreed)
 
             //assert
-            assertEquals(viewModel.searchBreeds.value?.status, Status.ERROR)
+            assertEquals(viewModel.searchBreeds.value, BreedEvent.Error("Error"))
         }
     }
 }

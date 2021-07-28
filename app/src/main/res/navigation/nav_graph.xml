@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
     <fragment
@@ -14,9 +15,9 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.innovaocean.adoptmeapp.ui.DetailFragment"
-        android:label="DetailFragment" >
+        android:label="DetailFragment">
         <argument
             android:name="breed"
-            app:argType="com.innovaocean.adoptmeapp.data.BreedResponse"/>
+            app:argType="com.innovaocean.adoptmeapp.domain.Breed" />
     </fragment>
 </navigation>

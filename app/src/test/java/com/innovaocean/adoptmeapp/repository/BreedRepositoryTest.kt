@@ -2,7 +2,7 @@ package com.innovaocean.adoptmeapp.repository
 
 import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.util.Status
+import com.innovaocean.adoptmeapp.util.Resource
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,33 +11,52 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class BreedRepositoryTest {
 
     private val testBreedsList = TestDataProvider.getBreeds()
+    private val testBreedsResponse = TestDataProvider.getBreedsResponse()
 
     @MockK
     private lateinit var api: PetApi
+
+    @MockK
+    private lateinit var mapper: BreedMapper
     private lateinit var repository: BreedRepositoryImpl
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        repository = BreedRepositoryImpl(api)
+        repository = BreedRepositoryImpl(api, mapper)
     }
 
     @Test
     fun `when api called and breed is in found then confirm Success`() {
         runBlockingTest {
             //arrange
-            coEvery { api.getBreeds() } returns Response.success(testBreedsList)
+            coEvery { api.getBreeds() } returns Response.success(testBreedsResponse)
 
             //act
             val response = repository.searchForBreeds("Siamese")
 
             //assert
-            assertEquals(response.status, Status.SUCCESS)
+            assertEquals(response, Resource.Success(testBreedsList))
+        }
+    }
+
+    @Test
+    fun `when api called and breed is empty then returns empty`() {
+        runBlockingTest {
+            //arrange
+            coEvery { api.getBreeds() } returns Response.success(emptyList())
+
+            //act
+            val response = repository.searchForBreeds("Siamese")
+
+            //assert
+            assertEquals(response, Resource.EmptyList)
         }
     }
 
@@ -51,7 +70,7 @@ class BreedRepositoryTest {
             val response = repository.searchForBreeds("XX")
 
             //assert
-            assertEquals(response.status, Status.ERROR)
+            assertEquals(response, Resource.ResponseUnsuccessful)
         }
     }
 
@@ -59,13 +78,27 @@ class BreedRepositoryTest {
     fun `when repo doesn't contain searched query return error`() {
         runBlockingTest {
             //arrange
-            coEvery { api.getBreeds().body() } returns TestDataProvider.getBreeds()
+            coEvery { api.getBreeds().body() } returns TestDataProvider.getBreedsResponse()
 
             //act
             val response = repository.searchForBreeds("XX")
 
             //assert
-            assertEquals(response.status, Status.ERROR)
+            assertEquals(response, Resource.Error)
+        }
+    }
+
+    @Test
+    fun `when api error query returns generic error`() {
+        runBlockingTest {
+            //arrange
+            coEvery { api.getBreeds() } throws Exception("error")
+
+            //act
+            val response = repository.searchForBreeds("XX")
+
+            //assert
+            assertEquals(response, Resource.Error)
         }
     }
 }
