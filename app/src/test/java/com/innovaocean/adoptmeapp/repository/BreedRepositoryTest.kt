@@ -37,6 +37,7 @@ class BreedRepositoryTest {
         runBlockingTest {
             //arrange
             coEvery { api.getBreeds() } returns Response.success(testBreedsResponse)
+            every { mapper.mapToDomain(testBreedsResponse) } returns testBreedsList
 
             //act
             val response = repository.searchForBreeds("Siamese")
