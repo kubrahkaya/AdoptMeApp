@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class Breed(
     val id: String,
     val name: String,
-    val image: ImageResponse?,
+    val image: Image?,
     val temperament: String,
     val wikipediaUrl: String,
     val energyLevel: Int

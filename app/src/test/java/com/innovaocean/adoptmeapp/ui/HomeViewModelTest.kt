@@ -3,8 +3,8 @@ package com.innovaocean.adoptmeapp.ui
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.innovaocean.adoptmeapp.MainCoroutineRule
 import com.innovaocean.adoptmeapp.TestDataProvider
-import com.innovaocean.adoptmeapp.data.ImageResponse
 import com.innovaocean.adoptmeapp.domain.Breed
+import com.innovaocean.adoptmeapp.domain.Image
 import com.innovaocean.adoptmeapp.usecase.GetBreedsResource
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
 import io.mockk.MockKAnnotations
@@ -50,7 +50,7 @@ class HomeViewModelTest {
             Breed(
                 id = "1",
                 name = "Siamese",
-                image = ImageResponse(""),
+                image = Image(""),
                 temperament = "Good cat",
                 wikipediaUrl = "www",
                 energyLevel = 5

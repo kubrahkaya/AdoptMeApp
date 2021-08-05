@@ -29,5 +29,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(api: PetApi) = BreedRepositoryImpl(api, BreedMapper()) as BreedRepository
+    fun provideRepository(api: PetApi, mapper: BreedMapper) =
+        BreedRepositoryImpl(api, mapper) as BreedRepository
+
+    @Singleton
+    @Provides
+    fun provideMapper() = BreedMapper()
 }
