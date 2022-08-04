@@ -14,7 +14,6 @@ Users can search by breed name and see more details about any specific breed.
 
 
 ## TODO 
-* Google's recommendation viewbinding can be applied
 * Improve test coverage
 * Handle exception cases
 * Support offline mode, caching 
