@@ -6,17 +6,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.SearchView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.innovaocean.adoptmeapp.R
+import com.innovaocean.adoptmeapp.databinding.FragmentHomeBinding
 import com.innovaocean.adoptmeapp.domain.Breed
 import com.innovaocean.adoptmeapp.util.gone
+import com.innovaocean.adoptmeapp.util.viewBinding
 import com.innovaocean.adoptmeapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,33 +25,32 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
 
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var breedAdapter: BreedAdapter
+    private val binding by viewBinding(FragmentHomeBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setupRecyclerView(view)
-        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
-        val errorText = view.findViewById<TextView>(R.id.errorText)
 
-        viewModel.searchBreeds.observe(viewLifecycleOwner, { response ->
+        viewModel.searchBreeds.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is BreedEvent.Success -> {
-                    progressBar.gone()
-                    errorText.gone()
+                    binding.progressBar.gone()
+                    binding.errorText.gone()
                     breedAdapter.differ.submitList(response.list)
                 }
                 is BreedEvent.Error -> {
-                    errorText.visible()
-                    errorText.text = response.error
+                    binding.errorText.visible()
+                    binding.errorText.text = response.error
                     breedAdapter.differ.submitList(emptyList())
-                    progressBar.gone()
+                    binding.progressBar.gone()
                 }
                 is BreedEvent.Loading -> {
-                    errorText.gone()
-                    progressBar.visible()
+                    binding.errorText.gone()
+                    binding.progressBar.visible()
                 }
             }
-        })
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -83,7 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
             isIconifiedByDefault = false
             queryHint = "Search"
             val query =
-                if (viewModel.searchedQuery.isEmpty()) "Balinese" else viewModel.searchedQuery
+                viewModel.searchedQuery.ifEmpty { "Balinese" }
             onQueryTextChange(query)
             setQuery(query, true)
             minimumWidth = 2700000
