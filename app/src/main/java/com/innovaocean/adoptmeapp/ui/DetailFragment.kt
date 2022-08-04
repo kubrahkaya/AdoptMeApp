@@ -25,7 +25,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
             binding.energyLevel.text = breed.energyLevel.toString()
             binding.wikiUrl.text = breed.wikipediaUrl
             breed.image?.let {
-                Glide.with(this).load(it.url).into(findViewById(R.id.image))
+                Glide.with(this).load(it.url).into(binding.image)
             }
         }
     }

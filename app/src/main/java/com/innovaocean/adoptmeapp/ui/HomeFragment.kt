@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.databinding.FragmentHomeBinding
 import com.innovaocean.adoptmeapp.domain.Breed
@@ -30,7 +29,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        setupRecyclerView(view)
+        setupRecyclerView()
 
         viewModel.searchBreeds.observe(viewLifecycleOwner) { response ->
             when (response) {
@@ -53,11 +52,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         }
     }
 
-    private fun setupRecyclerView(view: View) {
+    private fun setupRecyclerView() {
         breedAdapter = BreedAdapter {
             onBreedClicked(it)
         }
-        view.findViewById<RecyclerView>(R.id.breedsList).apply {
+        binding.breedsList.apply {
             adapter = breedAdapter
             layoutManager = LinearLayoutManager(activity)
         }

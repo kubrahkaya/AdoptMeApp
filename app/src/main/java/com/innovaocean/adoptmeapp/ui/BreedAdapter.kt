@@ -1,15 +1,13 @@
 package com.innovaocean.adoptmeapp.ui
 
+import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.innovaocean.adoptmeapp.R
+import com.innovaocean.adoptmeapp.databinding.ItemBreedBinding
 import com.innovaocean.adoptmeapp.domain.Breed
 
 class BreedAdapter(private val onBreedClicked: (Breed) -> Unit) :
@@ -27,35 +25,32 @@ class BreedAdapter(private val onBreedClicked: (Breed) -> Unit) :
 
     val differ = AsyncListDiffer(this, differCallback)
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_breed,
-                parent,
-                false
-            )
-        )
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = ItemBreedBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val breed = differ.currentList[position]
-
-        val imageView = holder.itemView.findViewById<ImageView>(R.id.breedImage)
-        val textView = holder.itemView.findViewById<TextView>(R.id.breedName)
-        holder.itemView.apply {
-            breed.image?.let {
-                Glide.with(this).load(it.url).into(imageView)
-            }
-            textView.text = breed.name
-            setOnClickListener {
-                onBreedClicked(breed)
-            }
-        }
+        val context = holder.itemView.context
+        holder.bind(context, breed, onBreedClicked)
     }
 
     override fun getItemCount(): Int {
         return differ.currentList.size
+    }
+
+    inner class ViewHolder(private val binding:ItemBreedBinding) : RecyclerView.ViewHolder(binding.root){
+
+        fun bind(context: Context, breed: Breed, onBreedClicked: (Breed) -> Unit) {
+            breed.image?.let {
+                Glide.with(context).load(it.url).into(binding.breedImage)
+            }
+            binding.breedName.text = breed.name
+            binding.root.setOnClickListener {
+                onBreedClicked(breed)
+            }
+        }
     }
 }
