@@ -3,7 +3,7 @@ package com.innovaocean.adoptmeapp.usecase
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.repository.BreedRepository
-import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.repository.BreedRepository.BreedResponse
 import com.innovaocean.adoptmeapp.util.StringResourceWrapper
 import io.mockk.coEvery
 import io.mockk.every
@@ -21,7 +21,7 @@ class GetBreedsUseCaseTest {
 
     private val breedRepository = mockk<BreedRepository>()
     private val strings = mockk<StringResourceWrapper>()
-    private val getBreedsUseCase = GetBreedsUseCase(breedRepository, strings)
+    private val getBreedsUseCase = GetBreedsUseCaseImpl(breedRepository, strings)
 
 
     @Before
@@ -35,15 +35,15 @@ class GetBreedsUseCaseTest {
     fun `when api called and breed is found then confirm Success`() {
         runBlockingTest {
             //arrange
-            coEvery { breedRepository.searchForBreeds("Siamese") } returns Resource.Success(
+            coEvery { breedRepository.searchForBreeds("Siamese") } returns BreedResponse.Success(
                 testBreedList
             )
 
             //act
-            val response = getBreedsUseCase.execute("Siamese")
+            val response = getBreedsUseCase("Siamese")
 
             //assert
-            assertEquals(response, GetBreedsResource.Success(testBreedList))
+            assertEquals(response, GetBreedsResult.Success(testBreedList))
         }
     }
 
@@ -53,15 +53,15 @@ class GetBreedsUseCaseTest {
             //arrange
             coEvery {
                 breedRepository.searchForBreeds("XX")
-            } returns Resource.ResponseUnsuccessful
+            } returns BreedResponse.ResponseUnsuccessful
 
             //act
-            val response = getBreedsUseCase.execute("XX")
+            val response = getBreedsUseCase("XX")
 
             //assert
             assertEquals(
                 response,
-                GetBreedsResource.Error("Request failed! Please try again.")
+                GetBreedsResult.Error("Request failed! Please try again.")
             )
         }
     }
@@ -70,13 +70,13 @@ class GetBreedsUseCaseTest {
     fun `when repo doesn't contain searched query return error`() {
         runBlockingTest {
             //arrange
-            coEvery { breedRepository.searchForBreeds("XX") } returns Resource.ResponseError
+            coEvery { breedRepository.searchForBreeds("XX") } returns BreedResponse.ResponseError
 
             //act
-            val response = getBreedsUseCase.execute("XX")
+            val response = getBreedsUseCase("XX")
 
             //assert
-            assertEquals(response, GetBreedsResource.Error("Unknown Error!"))
+            assertEquals(response, GetBreedsResult.Error("Unknown Error!"))
         }
     }
 
@@ -84,13 +84,13 @@ class GetBreedsUseCaseTest {
     fun `when api error query returns generic error`() {
         runBlockingTest {
             //arrange
-            coEvery { breedRepository.searchForBreeds("XX") } returns Resource.Error
+            coEvery { breedRepository.searchForBreeds("XX") } returns BreedResponse.Error
 
             //act
-            val response = getBreedsUseCase.execute("XX")
+            val response = getBreedsUseCase("XX")
 
             //assert
-            assertEquals(response, GetBreedsResource.Error("Something went wrong!"))
+            assertEquals(response, GetBreedsResult.Error("Something went wrong!"))
         }
     }
 }

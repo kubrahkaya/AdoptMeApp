@@ -16,7 +16,7 @@ object StringResourceModule {
 
     @ViewModelScoped
     @Provides
-    public fun provideStringResources(
+    fun provideStringResources(
         @ApplicationContext context: Context
     ): StringResourceWrapper = StringResourceWrapperAndroid(context)
 

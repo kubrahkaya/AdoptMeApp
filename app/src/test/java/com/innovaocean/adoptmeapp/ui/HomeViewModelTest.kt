@@ -4,7 +4,7 @@ import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.ViewModelFlowCollector
 import com.innovaocean.adoptmeapp.domain.Breed
 import com.innovaocean.adoptmeapp.domain.Image
-import com.innovaocean.adoptmeapp.usecase.GetBreedsResource
+import com.innovaocean.adoptmeapp.usecase.GetBreedsResult
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -42,8 +42,8 @@ class HomeViewModelTest {
             )
             //arrange
             coEvery {
-                useCase.execute(existedBreedName)
-            } returns GetBreedsResource.Success(testBreedsList)
+                useCase(existedBreedName)
+            } returns GetBreedsResult.Success(testBreedsList)
 
             //act
             viewModel.searchBreeds(existedBreedName)
@@ -60,8 +60,8 @@ class HomeViewModelTest {
         collector.test { _, events ->
             //arrange
             coEvery {
-                useCase.execute(unknownBreed)
-            } returns GetBreedsResource.Error("Error")
+                useCase(unknownBreed)
+            } returns GetBreedsResult.Error("Error")
 
             //act
             viewModel.searchBreeds(unknownBreed)
@@ -90,8 +90,8 @@ class HomeViewModelTest {
             breeds.add(breed)
             //arrange
             coEvery {
-                useCase.execute(existedBreedName)
-            } returns GetBreedsResource.Success(testBreedsList)
+                useCase(existedBreedName)
+            } returns GetBreedsResult.Success(testBreedsList)
 
             //act
             viewModel.searchBreeds(existedBreedName)

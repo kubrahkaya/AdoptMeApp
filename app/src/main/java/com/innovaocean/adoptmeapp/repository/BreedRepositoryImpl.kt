@@ -1,15 +1,14 @@
 package com.innovaocean.adoptmeapp.repository
 
 import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.repository.BreedRepository.BreedResponse.*
 import javax.inject.Inject
 
 class BreedRepositoryImpl @Inject constructor(
-    private val petApi: PetApi,
-    private val breedMapper: BreedMapper
+    private val petApi: PetApi
 ) : BreedRepository {
 
-    override suspend fun searchForBreeds(searchQuery: String): Resource {
+    override suspend fun searchForBreeds(searchQuery: String): BreedRepository.BreedResponse {
         return try {
             val response = petApi.getBreeds()
             when {
@@ -22,16 +21,16 @@ class BreedRepositoryImpl @Inject constructor(
                             )
                         }
                         return if (filteredList.isEmpty()) {
-                            Resource.EmptyList
+                            EmptyList
                         } else {
-                            Resource.Success(breedMapper.mapToDomain(filteredList))
+                            Success(filteredList.mapToDomain())
                         }
-                    } ?: Resource.ResponseError
+                    } ?: ResponseError
                 }
-                else -> Resource.ResponseUnsuccessful
+                else -> ResponseUnsuccessful
             }
         } catch (e: Exception) {
-            Resource.Error
+            Error
         }
     }
 

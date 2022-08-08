@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.innovaocean.adoptmeapp.di.IoDispatcher
 import com.innovaocean.adoptmeapp.domain.Breed
-import com.innovaocean.adoptmeapp.usecase.GetBreedsResource
+import com.innovaocean.adoptmeapp.usecase.GetBreedsResult
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val useCase: GetBreedsUseCase,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher,) : ViewModel() {
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
+) : ViewModel() {
 
     private val _state = MutableStateFlow(
         BreedState(
@@ -37,13 +38,13 @@ class HomeViewModel @Inject constructor(
         if (searchQuery.isNotEmpty()) {
             viewModelScope.launch(dispatcher) {
                 _state.value = _state.value.copy(isLoading = true)
-                val result = useCase.execute(searchQuery)
+                val result = useCase(searchQuery)
                 _state.value = _state.value.copy(isLoading = false)
                 when (result) {
-                    is GetBreedsResource.Success -> {
+                    is GetBreedsResult.Success -> {
                         _state.value = _state.value.copy(breedList = result.breeds)
                     }
-                    is GetBreedsResource.Error -> {
+                    is GetBreedsResult.Error -> {
                         _state.value = _state.value.copy(breedList = emptyList())
                         _events.emit(BreedsEvent.ShowError(result.message))
                     }
@@ -52,7 +53,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onBreedClicked(breed: Breed) = viewModelScope.launch(dispatcher){
+    fun onBreedClicked(breed: Breed) = viewModelScope.launch(dispatcher) {
         _events.emit(BreedsEvent.OpenBreedDetail(breed))
     }
 }
@@ -64,5 +65,5 @@ internal data class BreedState(
 
 internal sealed class BreedsEvent {
     data class ShowError(val message: String) : BreedsEvent()
-    data class OpenBreedDetail(val breed: Breed): BreedsEvent()
+    data class OpenBreedDetail(val breed: Breed) : BreedsEvent()
 }

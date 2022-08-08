@@ -2,7 +2,7 @@ package com.innovaocean.adoptmeapp.repository
 
 import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.repository.BreedRepository.*
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -17,21 +17,19 @@ class BreedRepositoryTest {
     private val testBreedsResponse = TestDataProvider.getBreedsResponse()
 
     private val api= mockk<PetApi>()
-    private val mapper = mockk<BreedMapper>()
-    private val repository = BreedRepositoryImpl(api, mapper)
+    private val repository = BreedRepositoryImpl(api)
 
     @Test
     fun `when api called and breed is in found then confirm Success`() {
         runBlocking {
             //arrange
             coEvery { api.getBreeds() } returns Response.success(testBreedsResponse)
-            every { mapper.mapToDomain(testBreedsResponse) } returns testBreedsList
 
             //act
             val response = repository.searchForBreeds("Siamese")
 
             //assert
-            assertEquals(response, Resource.Success(testBreedsList))
+            assertEquals(response, BreedResponse.Success(testBreedsList))
         }
     }
 
@@ -45,7 +43,7 @@ class BreedRepositoryTest {
             val response = repository.searchForBreeds("Siamese")
 
             //assert
-            assertEquals(response, Resource.EmptyList)
+            assertEquals(response, BreedResponse.EmptyList)
         }
     }
 
@@ -59,7 +57,7 @@ class BreedRepositoryTest {
             val response = repository.searchForBreeds("XX")
 
             //assert
-            assertEquals(response, Resource.ResponseUnsuccessful)
+            assertEquals(response, BreedResponse.ResponseUnsuccessful)
         }
     }
 
@@ -73,7 +71,7 @@ class BreedRepositoryTest {
             val response = repository.searchForBreeds("XX")
 
             //assert
-            assertEquals(response, Resource.Error)
+            assertEquals(response, BreedResponse.Error)
         }
     }
 
@@ -87,7 +85,7 @@ class BreedRepositoryTest {
             val response = repository.searchForBreeds("XX")
 
             //assert
-            assertEquals(response, Resource.Error)
+            assertEquals(response, BreedResponse.Error)
         }
     }
 }

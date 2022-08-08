@@ -1,9 +1,6 @@
 package com.innovaocean.adoptmeapp.di
 
 import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.repository.BreedMapper
-import com.innovaocean.adoptmeapp.repository.BreedRepository
-import com.innovaocean.adoptmeapp.repository.BreedRepositoryImpl
 import com.innovaocean.adoptmeapp.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -26,13 +23,4 @@ object AppModule {
             .build()
             .create(PetApi::class.java)
     }
-
-    @Singleton
-    @Provides
-    fun provideRepository(api: PetApi, mapper: BreedMapper) =
-        BreedRepositoryImpl(api, mapper) as BreedRepository
-
-    @Singleton
-    @Provides
-    fun provideMapper() = BreedMapper()
 }
