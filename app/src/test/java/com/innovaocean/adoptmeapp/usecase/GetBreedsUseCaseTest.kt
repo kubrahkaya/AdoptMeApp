@@ -3,13 +3,11 @@ package com.innovaocean.adoptmeapp.usecase
 import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.repository.BreedRepository
 import com.innovaocean.adoptmeapp.util.Resource
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
-import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -17,15 +15,8 @@ class GetBreedsUseCaseTest {
 
     private val testBreedList = TestDataProvider.getBreeds()
 
-    @MockK
-    private lateinit var breedRepository: BreedRepository
-    private lateinit var getBreedsUseCase: GetBreedsUseCase
-
-    @Before
-    fun setup() {
-        MockKAnnotations.init(this)
-        getBreedsUseCase = GetBreedsUseCase(breedRepository)
-    }
+    private val breedRepository = mockk<BreedRepository>()
+    private val getBreedsUseCase = GetBreedsUseCase(breedRepository)
 
     @Test
     fun `when api called and breed is found then confirm Success`() {

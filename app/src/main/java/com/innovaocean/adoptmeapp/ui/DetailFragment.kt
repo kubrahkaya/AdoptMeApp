@@ -19,14 +19,12 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val breed = args.breed
-        view.apply {
-            binding.name.text = breed.name
-            binding.temperament.text = breed.temperament
-            binding.energyLevel.text = breed.energyLevel.toString()
-            binding.wikiUrl.text = breed.wikipediaUrl
-            breed.image?.let {
-                Glide.with(this).load(it.url).into(binding.image)
-            }
+        binding.name.text = breed.name
+        binding.temperament.text = breed.temperament
+        binding.energyLevel.text = breed.energyLevel.toString()
+        breed.wikipediaUrl?.let { binding.wikiUrl.text = it }
+        breed.image?.let {
+            Glide.with(this).load(it.url).into(binding.image)
         }
     }
 

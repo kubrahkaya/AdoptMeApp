@@ -1,62 +1,45 @@
 package com.innovaocean.adoptmeapp.ui
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.innovaocean.adoptmeapp.MainCoroutineRule
 import com.innovaocean.adoptmeapp.TestDataProvider
+import com.innovaocean.adoptmeapp.ViewModelFlowCollector
 import com.innovaocean.adoptmeapp.domain.Breed
 import com.innovaocean.adoptmeapp.domain.Image
 import com.innovaocean.adoptmeapp.usecase.GetBreedsResource
 import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class HomeViewModelTest {
 
-    @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
+    private val dispatcher = TestCoroutineDispatcher()
 
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
+    private val useCase = mockk<GetBreedsUseCase>(relaxUnitFun = true)
 
-    private lateinit var viewModel: HomeViewModel
-
-    @RelaxedMockK
-    private lateinit var useCase: GetBreedsUseCase
+    private val viewModel = HomeViewModel(useCase, dispatcher)
+    private val collector = ViewModelFlowCollector(viewModel.state, viewModel.events, dispatcher)
 
     private val testBreedsList = TestDataProvider.getBreeds()
 
-    @Before
-    fun setUp() {
-        MockKAnnotations.init(this)
-
-        // instantiate the system in test
-        viewModel = HomeViewModel(useCase)
-    }
-
     @Test
     fun `when searched breed is in repo`() {
-        val existedBreedName = "Siamese"
-        val breeds = mutableListOf<Breed>()
-        breeds.add(
-            Breed(
-                id = "1",
-                name = "Siamese",
-                image = Image(""),
-                temperament = "Good cat",
-                wikipediaUrl = "www",
-                energyLevel = 5
+        collector.test { states, _ ->
+            val existedBreedName = "Siamese"
+            val breeds = mutableListOf<Breed>()
+            breeds.add(
+                Breed(
+                    id = "1",
+                    name = "Siamese",
+                    image = Image(""),
+                    temperament = "Good cat",
+                    wikipediaUrl = "www",
+                    energyLevel = 5
+                )
             )
-        )
-        mainCoroutineRule.runBlockingTest {
             //arrange
             coEvery {
                 useCase.execute(existedBreedName)
@@ -66,15 +49,15 @@ class HomeViewModelTest {
             viewModel.searchBreeds(existedBreedName)
 
             //assert
-            assertNotNull(viewModel.searchBreeds.value)
-            assertEquals(viewModel.searchBreeds.value, BreedEvent.Success(breeds))
+            val expectedStates = BreedState(isLoading = false, breedList = breeds)
+            assertEquals(expectedStates, states.last())
         }
     }
 
     @Test
     fun `when searched breed is not repo`() {
         val unknownBreed = "XXX"
-        mainCoroutineRule.runBlockingTest {
+        collector.test { _, events ->
             //arrange
             coEvery {
                 useCase.execute(unknownBreed)
@@ -84,7 +67,39 @@ class HomeViewModelTest {
             viewModel.searchBreeds(unknownBreed)
 
             //assert
-            assertEquals(viewModel.searchBreeds.value, BreedEvent.Error("Error"))
+            val expectedEvents = listOf(
+                BreedsEvent.ShowError("Error")
+            )
+            assertEquals(expectedEvents, events)
+        }
+    }
+
+    @Test
+    fun `when user clicks on an item then navigate to detail`() {
+        collector.test { _, events ->
+            val existedBreedName = "Siamese"
+            val breeds = mutableListOf<Breed>()
+            val breed = Breed(
+                id = "1",
+                name = "Siamese",
+                image = Image(""),
+                temperament = "Good cat",
+                wikipediaUrl = "www",
+                energyLevel = 5
+            )
+            breeds.add(breed)
+            //arrange
+            coEvery {
+                useCase.execute(existedBreedName)
+            } returns GetBreedsResource.Success(testBreedsList)
+
+            //act
+            viewModel.searchBreeds(existedBreedName)
+            viewModel.onBreedClicked(breed)
+
+            //assert
+            val expectedEvents = listOf<BreedsEvent>(BreedsEvent.OpenBreedDetail(breed))
+            assertEquals(expectedEvents, events)
         }
     }
 }

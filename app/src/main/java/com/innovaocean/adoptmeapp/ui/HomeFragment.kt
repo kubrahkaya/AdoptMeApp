@@ -7,46 +7,60 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.databinding.FragmentHomeBinding
 import com.innovaocean.adoptmeapp.domain.Breed
-import com.innovaocean.adoptmeapp.util.gone
 import com.innovaocean.adoptmeapp.util.viewBinding
-import com.innovaocean.adoptmeapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener {
 
     private val viewModel: HomeViewModel by viewModels()
-    private lateinit var breedAdapter: BreedAdapter
     private val binding by viewBinding(FragmentHomeBinding::bind)
+    private lateinit var breedAdapter: BreedAdapter
+
+    private var stateJob: Job? = null
+    private var eventJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setupRecyclerView()
 
-        viewModel.searchBreeds.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is BreedEvent.Success -> {
-                    binding.progressBar.gone()
-                    binding.errorText.gone()
-                    breedAdapter.differ.submitList(response.list)
-                }
-                is BreedEvent.Error -> {
-                    binding.errorText.visible()
-                    binding.errorText.text = response.error
-                    breedAdapter.differ.submitList(emptyList())
-                    binding.progressBar.gone()
-                }
-                is BreedEvent.Loading -> {
-                    binding.errorText.gone()
-                    binding.progressBar.visible()
+        observeStates()
+        observeEvents()
+    }
+
+    private fun observeStates() {
+        stateJob = lifecycleScope.launchWhenStarted {
+            viewModel.state.collect { state ->
+                binding.progressBar.isVisible = state.isLoading
+                breedAdapter.differ.submitList(state.breedList)
+            }
+        }
+    }
+
+    private fun observeEvents() {
+        eventJob = lifecycleScope.launchWhenStarted {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is BreedsEvent.ShowError -> {
+                        showSnackBar(event.message)
+                        breedAdapter.differ.submitList(emptyList())
+                    }
+                    is BreedsEvent.OpenBreedDetail -> {
+                        onBreedClicked(event.breed)
+                    }
                 }
             }
         }
@@ -54,7 +68,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
 
     private fun setupRecyclerView() {
         breedAdapter = BreedAdapter {
-            onBreedClicked(it)
+            viewModel.onBreedClicked(it)
         }
         binding.breedsList.apply {
             adapter = breedAdapter
@@ -102,5 +116,19 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
             breedAdapter.differ.submitList(emptyList())
         }
         return true
+    }
+
+    private fun showSnackBar(message: String) {
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
+
+    override fun onDestroyView() {
+        stateJob?.cancel()
+        eventJob?.cancel()
+        super.onDestroyView()
     }
 }

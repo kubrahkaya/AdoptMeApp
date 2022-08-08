@@ -12,7 +12,7 @@ data class BreedResponse(
     @SerializedName("temperament")
     val temperament: String,
     @SerializedName("wikipedia_url")
-    val wikipediaUrl: String,
+    val wikipediaUrl: String?,
     @SerializedName("energy_level")
     val energyLevel: Int
 )
