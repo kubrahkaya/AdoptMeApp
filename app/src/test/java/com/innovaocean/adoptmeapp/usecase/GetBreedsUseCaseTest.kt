@@ -1,13 +1,17 @@
 package com.innovaocean.adoptmeapp.usecase
 
+import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.repository.BreedRepository
 import com.innovaocean.adoptmeapp.util.Resource
+import com.innovaocean.adoptmeapp.util.StringResourceWrapper
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -16,7 +20,16 @@ class GetBreedsUseCaseTest {
     private val testBreedList = TestDataProvider.getBreeds()
 
     private val breedRepository = mockk<BreedRepository>()
-    private val getBreedsUseCase = GetBreedsUseCase(breedRepository)
+    private val strings = mockk<StringResourceWrapper>()
+    private val getBreedsUseCase = GetBreedsUseCase(breedRepository, strings)
+
+
+    @Before
+    fun setUp() {
+        every { strings.getString(R.string.request_failed)} returns "Request failed! Please try again."
+        every { strings.getString(R.string.unknown_error)} returns "Unknown Error!"
+        every { strings.getString(R.string.something_went_wrong)} returns "Something went wrong!"
+    }
 
     @Test
     fun `when api called and breed is found then confirm Success`() {
