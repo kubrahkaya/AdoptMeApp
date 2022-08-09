@@ -1,7 +1,7 @@
-package com.innovaocean.adoptmeapp.repository
+package com.innovaocean.adoptmeapp.data.repository
 
-import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.repository.BreedRepository.BreedResponse.*
+import com.innovaocean.adoptmeapp.data.api.PetApi
+import com.innovaocean.adoptmeapp.data.repository.BreedRepository.BreedResponse.*
 import javax.inject.Inject
 
 class BreedRepositoryImpl @Inject constructor(

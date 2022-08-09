@@ -1,9 +1,9 @@
 package com.innovaocean.adoptmeapp.di
 
-import com.innovaocean.adoptmeapp.repository.BreedRepository
-import com.innovaocean.adoptmeapp.repository.BreedRepositoryImpl
-import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
-import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCaseImpl
+import com.innovaocean.adoptmeapp.data.repository.BreedRepository
+import com.innovaocean.adoptmeapp.data.repository.BreedRepositoryImpl
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsUseCase
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

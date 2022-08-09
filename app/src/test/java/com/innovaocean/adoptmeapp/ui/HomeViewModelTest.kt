@@ -4,8 +4,8 @@ import com.innovaocean.adoptmeapp.TestDataProvider
 import com.innovaocean.adoptmeapp.ViewModelFlowCollector
 import com.innovaocean.adoptmeapp.domain.Breed
 import com.innovaocean.adoptmeapp.domain.Image
-import com.innovaocean.adoptmeapp.usecase.GetBreedsResult
-import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsResult
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

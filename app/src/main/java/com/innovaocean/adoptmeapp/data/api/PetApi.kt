@@ -1,4 +1,4 @@
-package com.innovaocean.adoptmeapp.api
+package com.innovaocean.adoptmeapp.data.api
 
 import com.innovaocean.adoptmeapp.data.BreedResponse
 import com.innovaocean.adoptmeapp.util.Constants

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.innovaocean.adoptmeapp.di.IoDispatcher
 import com.innovaocean.adoptmeapp.domain.Breed
-import com.innovaocean.adoptmeapp.usecase.GetBreedsResult
-import com.innovaocean.adoptmeapp.usecase.GetBreedsUseCase
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsResult
+import com.innovaocean.adoptmeapp.domain.usecase.GetBreedsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.innovaocean.adoptmeapp.repository
+package com.innovaocean.adoptmeapp.data.repository
 
 import com.innovaocean.adoptmeapp.domain.Breed
 

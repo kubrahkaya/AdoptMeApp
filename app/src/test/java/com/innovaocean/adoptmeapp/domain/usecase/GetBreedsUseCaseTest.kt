@@ -1,9 +1,9 @@
-package com.innovaocean.adoptmeapp.usecase
+package com.innovaocean.adoptmeapp.domain.usecase
 
 import com.innovaocean.adoptmeapp.R
 import com.innovaocean.adoptmeapp.TestDataProvider
-import com.innovaocean.adoptmeapp.repository.BreedRepository
-import com.innovaocean.adoptmeapp.repository.BreedRepository.BreedResponse
+import com.innovaocean.adoptmeapp.data.repository.BreedRepository
+import com.innovaocean.adoptmeapp.data.repository.BreedRepository.BreedResponse
 import com.innovaocean.adoptmeapp.util.StringResourceWrapper
 import io.mockk.coEvery
 import io.mockk.every

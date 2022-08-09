@@ -1,6 +1,6 @@
 package com.innovaocean.adoptmeapp.di
 
-import com.innovaocean.adoptmeapp.api.PetApi
+import com.innovaocean.adoptmeapp.data.api.PetApi
 import com.innovaocean.adoptmeapp.util.Constants
 import dagger.Module
 import dagger.Provides

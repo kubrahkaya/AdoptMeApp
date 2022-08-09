@@ -1,8 +1,8 @@
-package com.innovaocean.adoptmeapp.repository
+package com.innovaocean.adoptmeapp.data.repository
 
 import com.innovaocean.adoptmeapp.TestDataProvider
-import com.innovaocean.adoptmeapp.api.PetApi
-import com.innovaocean.adoptmeapp.repository.BreedRepository.*
+import com.innovaocean.adoptmeapp.data.api.PetApi
+import com.innovaocean.adoptmeapp.data.repository.BreedRepository.*
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

@@ -1,4 +1,4 @@
-package com.innovaocean.adoptmeapp.usecase
+package com.innovaocean.adoptmeapp.domain.usecase
 
 import com.innovaocean.adoptmeapp.domain.Breed
 
